@@ -5,30 +5,30 @@ import { EducationLevelModel } from '../../domain/models/education-level.entity'
 
 @Controller('educationlevel')
 export class EducationLevelController {
-  constructor(private educationLevelService: EducationLevelService) { }
+  constructor(private readonly educationLevelsService: EducationLevelService) {}
 
-  // @Post()
-  // async create(@Body() createEducationDto: CreateEducationDto): Promise<EducationLevelModel> {
-  //   return this.educationLevelService.create(createEducationDto);
-  // }
+  @Post()
+  create(@Body() form: CreateEducationDto){
+    return this.educationLevelsService.createEducationLevel(form)
+}
 
   @Get()
-  async findAll() {
-    return this.educationLevelService.findAll();
+  findAll() {
+    return this.educationLevelsService.findAll();
   }
 
   @Get(':id')
-  async (@Param('id') id: number){
-    return this.educationLevelService.findOne(id);
-}
+  findOne(@Param('id') id: number) {
+    return this.educationLevelsService.findById(id);
+  }
 
-  // @Put(':id')
-  // async updateById(@Param('id') id: number, @Body() form: CreateEducationDto) {
-  //   return this.educationLevelService.updateById(id, form);
-  // }
+  @Put(':id')
+  update(@Param('id') id: number, @Body() form: CreateEducationDto) {
+    return this.educationLevelsService.updateById(id, form);
+  }
 
-  // @Delete(':id')
-  // async remove(@Param('id') id: string): Promise<void> {
-  //   return this.educationLevelService.remove(id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.educationLevelsService.remove(+id);
+  }
 }
