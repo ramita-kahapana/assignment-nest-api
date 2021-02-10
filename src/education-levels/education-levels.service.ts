@@ -32,12 +32,13 @@ export class EducationLevelsService {
 
   async update(id: number, updateEducationLevelDto: UpdateEducationLevelDto) {
     await this.educationLevelRepository.update({ id }, updateEducationLevelDto);
-    return this.educationLevelRepository.findOne({ id })
+    const educationLevel = await this.educationLevelRepository.findOne({ id })
+    return { data: educationLevel }
   }
 
   async remove(id: number) {
-    await this.educationLevelRepository.delete(id);
-    return `This action removes a #${id} educationLevel`;
+    const educationLevel = await this.educationLevelRepository.delete(id);
+    return { data: educationLevel }
   }
   async cleanAll() {
     return this.educationLevelRepository.clear()
