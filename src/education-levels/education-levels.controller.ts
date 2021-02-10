@@ -31,4 +31,8 @@ export class EducationLevelsController {
   remove(@Param('id') id: string) {
     return this.educationLevelsService.remove(+id);
   }
+  @Delete()
+  cleanAll(){
+    return this.educationLevelsService.cleanAll();
+  }
 }

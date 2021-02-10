@@ -1,5 +1,5 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { CONSTANT } from 'src/constant/constant';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { CONSTANT } from '../constant/constant';
 import { CreateEducationLevelDto } from './dto/create-education-level.dto';
 import { UpdateEducationLevelDto } from './dto/update-education-level.dto';
 import { EducationLevel } from './entities/education-level.entity';
@@ -11,18 +11,23 @@ export class EducationLevelsService {
     @Inject(CONSTANT.EDUCATION_LEVEL_REPOSITORY) private readonly educationLevelRepository: EducationRepository,
   ) { }
 
-  create(createEducationLevelDto: CreateEducationLevelDto) {
-    const educationLevel = new EducationLevel();
-    educationLevel.name = createEducationLevelDto.name;
-    return this.educationLevelRepository.save(createEducationLevelDto);
+  async create(createEducationLevelDto: CreateEducationLevelDto) {
+    const educationLevelDto = new EducationLevel();
+    educationLevelDto.name = createEducationLevelDto.name;
+    const educationLevel = await this.educationLevelRepository.save(educationLevelDto);
+    return { data: educationLevel }
   }
 
   findAll(): Promise<EducationLevel[]> {
     return this.educationLevelRepository.find({});
   }
 
-  findOne(id: number) {
-    return this.educationLevelRepository.findOne(id);
+  async findOne(id: number) {
+    const educationLevel = await this.educationLevelRepository.findOne(id);
+    if (!educationLevel) {
+      throw new NotFoundException('Not data ');
+    }
+    return { data: educationLevel }
   }
 
   async update(id: number, updateEducationLevelDto: UpdateEducationLevelDto) {
@@ -33,5 +38,9 @@ export class EducationLevelsService {
   async remove(id: number) {
     await this.educationLevelRepository.delete(id);
     return `This action removes a #${id} educationLevel`;
+  }
+  async cleanAll() {
+    await this.educationLevelRepository.clear()
+    return this.educationLevelRepository.find();
   }
 }
