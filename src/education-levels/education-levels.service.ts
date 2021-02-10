@@ -40,7 +40,6 @@ export class EducationLevelsService {
     return `This action removes a #${id} educationLevel`;
   }
   async cleanAll() {
-    await this.educationLevelRepository.clear()
-    return this.educationLevelRepository.find();
+    return this.educationLevelRepository.clear()
   }
 }
