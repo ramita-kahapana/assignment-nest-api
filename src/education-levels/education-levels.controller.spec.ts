@@ -32,10 +32,11 @@ describe('EducationLevelsController', () => {
     it('should return correct data ', async () => {
       const result = new CreateEducationLevelDto();
       result.name = "ramita"
+
       const response = await educationLevelController.create(result)
-      delete response.data.id
+
       expect(response).toEqual({
-        data: { name: "ramita" }
+        data: { id: response.data.id, name: "ramita" }
       })
     })
   })
@@ -43,6 +44,7 @@ describe('EducationLevelsController', () => {
   describe('when get data from education-level', () => {
     it('should return correct data ', async () => {
       const response = await educationLevelController.findAll()
+
       expect(response).toEqual({ data: [] })
     })
   })
@@ -51,8 +53,10 @@ describe('EducationLevelsController', () => {
     it('should return correct data ', async () => {
       const result = new CreateEducationLevelDto();
       result.name = "ramita"
+
       const response = await educationLevelController.create(result)
       const resGetFindOne = await educationLevelController.findOne(response.data.id)
+
       expect(resGetFindOne).toEqual(
         { data: { id: response.data.id, name: 'ramita' } }
       )
@@ -63,7 +67,8 @@ describe('EducationLevelsController', () => {
       const error = async () => {
         await educationLevelController.findOne(ID)
       };
-      expect(error()).rejects.toThrow(NotFoundException)
+
+      expect(error).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -71,10 +76,12 @@ describe('EducationLevelsController', () => {
     it('should return correct data ', async () => {
       const data = new CreateEducationLevelDto();
       data.name = "ramita"
+
       const response = await educationLevelController.create(data)
       const up = new UpdateEducationLevelDto;
       up.name = "saza"
       const res = await educationLevelController.update(response.data.id, up)
+
       expect(res).toEqual(
         { data: { id: response.data.id, name: 'saza' } }
       )
@@ -85,6 +92,7 @@ describe('EducationLevelsController', () => {
       const error = async () => {
         await educationLevelController.findOne(ID)
       };
+
       expect(error()).rejects.toThrow(NotFoundException)
     })
   })
@@ -93,8 +101,10 @@ describe('EducationLevelsController', () => {
     it('should return correct data ', async () => {
       const result = new CreateEducationLevelDto();
       result.name = "ramita"
+
       const response = await educationLevelController.create(result)
       const res = await educationLevelController.remove(response.data.id)
+      
       expect(res).toEqual({ data: { raw: [], affected: 1 } })
     })
   })
