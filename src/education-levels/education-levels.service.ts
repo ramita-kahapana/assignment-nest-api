@@ -1,14 +1,15 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { CONSTANT } from '../constant/constant';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateEducationLevelDto } from './dto/create-education-level.dto';
 import { UpdateEducationLevelDto } from './dto/update-education-level.dto';
 import { EducationLevel } from './entities/education-level.entity';
-import { EducationRepository } from './repository/education-level.repository';
+
 
 @Injectable()
 export class EducationLevelsService {
   constructor(
-    @Inject(CONSTANT.EDUCATION_LEVEL_REPOSITORY) private readonly educationLevelRepository: EducationRepository,
+    @InjectRepository(EducationLevel) private readonly educationLevelRepository: Repository<EducationLevel>,
   ) { }
 
   async create(createEducationLevelDto: CreateEducationLevelDto) {
@@ -18,14 +19,15 @@ export class EducationLevelsService {
     return { data: educationLevel }
   }
 
-  findAll(): Promise<EducationLevel[]> {
-    return this.educationLevelRepository.find({});
+ async findAll() {
+  const educationLevel = await this.educationLevelRepository.find({});
+    return { data: educationLevel }
   }
 
   async findOne(id: number) {
     const educationLevel = await this.educationLevelRepository.findOne(id);
     if (!educationLevel) {
-      throw new NotFoundException('Not data ');
+      throw new NotFoundException('Not data');
     }
     return { data: educationLevel }
   }
@@ -41,6 +43,6 @@ export class EducationLevelsService {
     return { data: educationLevel }
   }
   async cleanAll() {
-    return this.educationLevelRepository.clear()
+    return await this.educationLevelRepository.clear()
   }
 }
