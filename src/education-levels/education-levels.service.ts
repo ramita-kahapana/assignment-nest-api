@@ -19,8 +19,8 @@ export class EducationLevelsService {
     return { data: educationLevel }
   }
 
- async findAll() {
-  const educationLevel = await this.educationLevelRepository.find({});
+  async findAll() {
+    const educationLevel = await this.educationLevelRepository.find({});
     return { data: educationLevel }
   }
 
@@ -35,6 +35,9 @@ export class EducationLevelsService {
   async update(id: number, updateEducationLevelDto: UpdateEducationLevelDto) {
     await this.educationLevelRepository.update({ id }, updateEducationLevelDto);
     const educationLevel = await this.educationLevelRepository.findOne({ id })
+    if (!educationLevel) {
+      throw new NotFoundException('Not ID');
+    }
     return { data: educationLevel }
   }
 
