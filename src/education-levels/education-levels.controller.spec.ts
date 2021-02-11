@@ -1,76 +1,85 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EducationLevelsController } from './education-levels.controller';
 import { EducationLevelsService } from './education-levels.service';
-import { DatabaseModule } from '../database/database.module'
-import { educationLevelProviders } from '../education-levels/providers/education-level.providers'
 import { CreateEducationLevelDto } from './dto/create-education-level.dto';
-import { EducationRepository } from './repository/education-level.repository';
-import { UpdateEducationLevelDto } from './dto/update-education-level.dto';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { createTestConfiguration } from '../database/database.db';
+import { EducationLevel } from './entities/education-level.entity';
+import { UpdateEducationLevelDto } from '../education-levels/dto/update-education-level.dto'
 
 describe('EducationLevelsController', () => {
   let educationLevelController: EducationLevelsController;
-  let db: EducationLevelsController;
-  let educationLevel: EducationLevelsService;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [TypeOrmModule.forFeature([EducationLevel]),
+      TypeOrmModule.forRoot(createTestConfiguration([EducationLevel]))],
       controllers: [EducationLevelsController],
-      providers: [EducationLevelsService,
-        ...educationLevelProviders],
+      providers: [EducationLevelsService],
     }).compile();
     educationLevelController = module.get<EducationLevelsController>(EducationLevelsController);
-    db = module.get<EducationLevelsController>(EducationLevelsController)
-    educationLevel = module.get<EducationLevelsService>(EducationLevelsService)
-
+    await educationLevelController.cleanAll()
   });
 
   afterEach(async () => {
-    db.cleanAll()
+    await educationLevelController.cleanAll()
+    await module.close()
   })
-
-  // describe('when update data from education-level', () => {
-  //   it('should return correct data ', async () => {
-  //     const result = new UpdateEducationLevelDto();
-  //     result.name = "saza"
-
-  //     const response = await educationLevelController.update(result)
-
-  //     delete response.data.id
-  //     expect(response).toEqual({
-  //       data: {
-  //         name: "saza"
-  //       }
-  //     })
-  //   });
-  // })
 
   describe('when create from education-level', () => {
     it('should return correct data ', async () => {
       const result = new CreateEducationLevelDto();
       result.name = "ramita"
-
       const response = await educationLevelController.create(result)
-
       delete response.data.id
       expect(response).toEqual({
-        data: {
-          name: "ramita"
-        }
+        data: { name: "ramita" }
       })
-    });
+    })
   })
 
+  describe('when get data from education-level', () => {
+    it('should return correct data ', async () => {
+      const response = await educationLevelController.findAll()
+      expect(response).toEqual({ data: [] })
+    })
+  })
 
-  // describe('when get data from education-level', () => {
-  //   it('should return correct data ', async () => {
-  //     const result = ['ramita']
-  //     const response = await educationLevel.findAll()
+  describe('when get data in id from education-level', () => {
+    it('should return correct data ', async () => {
+      const result = new CreateEducationLevelDto();
+      result.name = "ramita"
+      const response = await educationLevelController.create(result)
+      const resGetFindOne = await educationLevelController.findOne(response.data.id.toString())
+      expect(resGetFindOne).toEqual(
+        { data: { id: 1, name: 'ramita' } }
+      )
+    })
+  })
 
-  //     expect(response).toEqual(result);
-  //   })
-  // })
+  describe('when update data from education-level', () => {
+    it('should return correct data ', async () => {
+      const data = new CreateEducationLevelDto();
+      data.name = "ramita"
+      const response = await educationLevelController.create(data)
+      const up = new UpdateEducationLevelDto;
+      up.name = "saza"
+      const res = await educationLevelController.update(response.data.id.toString(), up)
+      expect(res).toEqual(
+        { data: { id: 1, name: 'saza' } }
+      )
+    })
+  })
 
-
+  describe('when delete from education-level', () => {
+    it('should return correct data ', async () => {
+      const result = new CreateEducationLevelDto();
+      result.name = "ramita"
+      const response = await educationLevelController.create(result)
+      const res = await educationLevelController.remove(response.data.id.toString())
+      expect(res).toEqual({ data: { raw: [] } })
+    })
+  })
 
 });

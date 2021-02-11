@@ -1,26 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EducationLevelsService } from './education-levels.service';
-import { DatabaseModule } from '../database/database.module'
 import { EducationLevelsController } from '../education-levels/education-levels.controller'
-import { educationLevelProviders } from '../education-levels/providers/education-level.providers'
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EducationLevel } from './entities/education-level.entity';
+import { createTestConfiguration } from '../database/database.db';
 
 describe('EducationLevelsService', () => {
   let service: EducationLevelsService;
-
+  let serviceTest: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
+    serviceTest = await Test.createTestingModule({
+      imports: [TypeOrmModule.forFeature([EducationLevel]),
+      TypeOrmModule.forRoot(createTestConfiguration([EducationLevel]))],
       controllers: [EducationLevelsController],
-      providers: [EducationLevelsService,
-        ...educationLevelProviders],
+      providers: [EducationLevelsService,],
     }).compile();
-
-    service = module.get<EducationLevelsService>(EducationLevelsService);
+    afterEach(async () => {
+      await serviceTest.close()
+    })
+    service = serviceTest.get<EducationLevelsService>(EducationLevelsService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 });
-
-
