@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { createTestConfiguration } from '../database/database.db';
 import { EducationLevel } from './entities/education-level.entity';
 import { UpdateEducationLevelDto } from '../education-levels/dto/update-education-level.dto'
+import { NotFoundException } from '@nestjs/common';
 
 describe('EducationLevelsController', () => {
   let educationLevelController: EducationLevelsController;
@@ -51,10 +52,18 @@ describe('EducationLevelsController', () => {
       const result = new CreateEducationLevelDto();
       result.name = "ramita"
       const response = await educationLevelController.create(result)
-      const resGetFindOne = await educationLevelController.findOne(response.data.id.toString())
+      const resGetFindOne = await educationLevelController.findOne(response.data.id)
       expect(resGetFindOne).toEqual(
-        { data: { id: 1, name: 'ramita' } }
+        { data: { id: response.data.id, name: 'ramita' } }
       )
+    })
+
+    it('should return error data ', async () => {
+      const ID = 1000
+      const error = async () => {
+        await educationLevelController.findOne(ID)
+      };
+      expect(error()).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -65,10 +74,18 @@ describe('EducationLevelsController', () => {
       const response = await educationLevelController.create(data)
       const up = new UpdateEducationLevelDto;
       up.name = "saza"
-      const res = await educationLevelController.update(response.data.id.toString(), up)
+      const res = await educationLevelController.update(response.data.id, up)
       expect(res).toEqual(
-        { data: { id: 1, name: 'saza' } }
+        { data: { id: response.data.id, name: 'saza' } }
       )
+    })
+
+    it('should return error data ', async () => {
+      const ID = 1000
+      const error = async () => {
+        await educationLevelController.findOne(ID)
+      };
+      expect(error()).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -77,9 +94,8 @@ describe('EducationLevelsController', () => {
       const result = new CreateEducationLevelDto();
       result.name = "ramita"
       const response = await educationLevelController.create(result)
-      const res = await educationLevelController.remove(response.data.id.toString())
-      expect(res).toEqual({ data: { raw: [] } })
+      const res = await educationLevelController.remove(response.data.id)
+      expect(res).toEqual({ data: { raw: [], affected: 1 } })
     })
   })
-
 });

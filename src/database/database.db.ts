@@ -5,9 +5,13 @@ type Entity = Function | string | EntitySchema<any>;
 export const createTestConfiguration = (
   entities: Entity[],
 ): TypeOrmModuleOptions => ({
-  type: 'sqlite',
-  database: ':memory:',
+  type: 'postgres',
+  database: 'test',
   entities,
+  host: 'localhost',
+  port: 5432,
+  username: 'postgres',
+  password: '1234',
   dropSchema: true,
   synchronize: true,
   logging: false,

@@ -27,7 +27,7 @@ export class EducationLevelsService {
   async findOne(id: number) {
     const educationLevel = await this.educationLevelRepository.findOne(id);
     if (!educationLevel) {
-      throw new NotFoundException('Not data');
+      throw new NotFoundException('Not ID');
     }
     return { data: educationLevel }
   }
